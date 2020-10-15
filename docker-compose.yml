@@ -1,0 +1,23 @@
+version: "3"
+services:  
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+    command: "-b 0.0.0.0 -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/keycloaktemp/demo-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING" 
+    volumes:
+      - ./keycloak/config:/tmp/keycloaktemp
+    ports:
+      - 8080:8080
+      - 8443:8443
+  example-app:
+    container_name: example-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/home/app
+    ports:
+      - 3000:3000  
